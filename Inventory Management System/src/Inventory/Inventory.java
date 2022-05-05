@@ -12,6 +12,7 @@ public class Inventory {
 	private HashMap<String, Integer> capCategory;
 	public int totalPrice = 0;
 	private HashMap<String, Integer> capCategoryCount;
+	public String quantityErrorType = "";
 	 
 	
 	private Inventory() {
@@ -81,14 +82,14 @@ public class Inventory {
 		return inventory;
 	}
 	
-	public TreeMap getItems() {
+	public TreeMap<String, InventoryItem> getItems() {
 		return inventoryItems;
 	}
 	
-	public List getCards() {
+	public List<String> getCards() {
 		return cards;
 	}
-	public HashMap getCapCategory() {
+	public HashMap<String, Integer> getCapCategory() {
 		return capCategory;
 	}
 	
@@ -96,6 +97,7 @@ public class Inventory {
 		InventoryItem item = inventoryItems.get(itemName);
 		if(quantityRequested > item.stock) {
 			System.out.println("Invalid "+ quantityRequested);
+			quantityErrorType = "INSUFFICIENT STOCK";
 			return false;
 		} else {
 			//check cap of category if valid
@@ -104,12 +106,15 @@ public class Inventory {
 				capCategoryCount.put(item.category, currCount);
 				return true;
 			} else {
+				quantityErrorType = "CAP OF CATEGORY EXCEEDED!";
 				return false;
 			}
 		}
 	}
 	
-	public List order( List <ItemsRequested> itemsRequested) {
+	public List<ItemsRequested> order( List <ItemsRequested> itemsRequested) {
+		quantityErrorType = "";
+		
 		List <ItemsRequested> invalidItems = new ArrayList<ItemsRequested>();
 		totalPrice = 0;
 		for (int i = 0; i < itemsRequested.size(); i++) {
@@ -117,8 +122,9 @@ public class Inventory {
 			if (inventory.checkQuantity(item.itemName, item.quantityRequested)) {
 				InventoryItem item1 = inventoryItems.get(item.itemName);
 				totalPrice += item1.price* item.quantityRequested;
-				System.out.println("Valid");
+				System.out.println("Valid item: " + item.itemName);
 			} else {
+				System.out.println("Invalid item: " + item.itemName);
 				invalidItems.add(item);
 				System.out.println(item.itemName);
 			}
